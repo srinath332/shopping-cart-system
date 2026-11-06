@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storefront | Modern Shop</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="brand">🛒 ShopCart</a>
+            <nav id="nav-links"></nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Explore Products</h1>
+        
+        <div class="filter-bar">
+            <input type="text" id="search-input" placeholder="Search products..." onkeyup="fetchProducts()">
+            <input type="text" id="category-input" placeholder="Category..." onkeyup="fetchProducts()">
+            <button class="btn btn-primary" onclick="fetchProducts()">Search</button>
+        </div>
+
+        <div id="product-list" class="product-grid"></div>
+    </div>
+
+    <!-- Auth Modal Dialog -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-tabs">
+                <button class="tab-btn active" onclick="switchAuthTab('login')">Login</button>
+                <button class="tab-btn" onclick="switchAuthTab('register')">Register</button>
+            </div>
+            
+            <form id="login-form">
+                <label>Account Name</label>
+                <input type="text" id="login-name" required placeholder="e.g. John Doe">
+                <label>Password</label>
+                <input type="password" id="login-password" required placeholder="••••••••">
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">Sign In</button>
+            </form>
+
+            <form id="register-form" style="display:none;">
+                <label>Full Name</label>
+                <input type="text" id="reg-name" required placeholder="John Doe">
+                <label>Password</label>
+                <input type="password" id="reg-password" required placeholder="••••••••">
+                <label>Phone Number</label>
+                <input type="text" id="reg-phone" placeholder="Optional">
+                <label>Role</label>
+                <select id="reg-role">
+                    <option value="customer">Customer</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:1rem;">Create Account</button>
+            </form>
+            
+            <button class="btn btn-outline" style="width:100%; margin-top:0.75rem;" onclick="closeAuthModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            fetchProducts();
+        });
+    </script>
+</body>
+</html>

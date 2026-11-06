@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cart & Orders</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="brand">🛒 ShopCart</a>
+            <nav id="nav-links"></nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Shopping Cart</h1>
+        <div class="card">
+            <table id="cart-table">
+                <thead>
+                    <tr><th>Product</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th>Action</th></tr>
+                </thead>
+                <tbody id="cart-body"></tbody>
+            </table>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 1.5rem;">
+                <h2 style="font-size: 1.25rem;">Total Amount: <span style="color:var(--primary);">$<span id="cart-total">0.00</span></span></h2>
+                <button class="btn btn-primary" onclick="placeOrder()">Checkout Order</button>
+            </div>
+        </div>
+
+        <h1 class="page-title">Order History</h1>
+        <div class="card">
+            <table>
+                <thead>
+                    <tr><th>Order ID</th><th>Date</th><th>Total</th><th>Status</th></tr>
+                </thead>
+                <tbody id="order-history-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            fetchCart();
+            fetchOrderHistory();
+        });
+    </script>
+</body>
+</html>

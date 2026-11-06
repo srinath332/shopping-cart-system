@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ShopCart</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="brand">🛒 ShopCart Admin</a>
+            <nav id="nav-links"></nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Product & Inventory Management</h1>
+
+        <!-- Add Product Form Card -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h2>Add New Product</h2>
+            <form id="add-product-form" style="display: grid; gap: 1rem; margin-top: 1rem;">
+                <input type="text" id="prod-name" placeholder="Product Name" required style="padding: 0.6rem; border-radius: 6px; border: 1px solid #cbd5e1;">
+                <input type="text" id="prod-category" placeholder="Category (e.g., Electronics, Apparel)" required style="padding: 0.6rem; border-radius: 6px; border: 1px solid #cbd5e1;">
+                <textarea id="prod-desc" placeholder="Product Description" style="padding: 0.6rem; border-radius: 6px; border: 1px solid #cbd5e1;"></textarea>
+                <input type="number" step="0.01" id="prod-price" placeholder="Price ($)" required style="padding: 0.6rem; border-radius: 6px; border: 1px solid #cbd5e1;">
+                <input type="number" id="prod-stock" placeholder="Stock Quantity" required style="padding: 0.6rem; border-radius: 6px; border: 1px solid #cbd5e1;">
+                <button type="submit" class="btn btn-primary">Add Product</button>
+            </form>
+        </div>
+
+        <!-- Existing Products Table -->
+        <div class="card">
+            <h2>Inventory List</h2>
+            <table id="admin-products-table" style="width: 100%; margin-top: 1rem;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-product-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAuth();
+            if (!currentUser || currentUser.role !== 'admin') {
+                alert('Access denied. Admins only.');
+                window.location.href = 'index.html';
+                return;
+            }
+            fetchAdminProducts();
+        });
+
+        async function fetchAdminProducts() {
+            const res = await fetch('/api/products');
+            const products = await res.json();
+            const tbody = document.getElementById('admin-product-body');
+            
+            if (products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No products found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td>#${p.product_id}</td>
+                    <td>${p.product_name}</td>
+                    <td>${p.category}</td>
+                    <td>$${Number(p.price).toFixed(2)}</td>
+                    <td>${p.stck}</td>
+                    <td>
+                        <button class="btn btn-outline" style="color:red; border-color:red; padding: 0.2rem 0.5rem;" onclick="deleteProduct(${p.product_id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const product_name = document.getElementById('prod-name').value;
+            const category = document.getElementById('prod-category').value;
+            const description = document.getElementById('prod-desc').value;
+            const price = document.getElementById('prod-price').value;
+            const stck = document.getElementById('prod-stock').value;
+
+            const res = await fetch('/api/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_name, category, description, price, stck })
+            });
+
+            if (res.ok) {
+                alert('Product added successfully!');
+                document.getElementById('add-product-form').reset();
+                fetchAdminProducts();
+            } else {
+                const data = await res.json();
+                alert(data.error || 'Failed to add product.');
+            }
+        });
+
+        async function deleteProduct(id) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+            const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                fetchAdminProducts();
+            } else {
+                alert('Failed to delete product.');
+            }
+        }
+    </script>
+</body>
+</html>
